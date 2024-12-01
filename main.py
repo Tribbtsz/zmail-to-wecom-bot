@@ -36,8 +36,10 @@ def connect_imap():
     return conn
 
 def fetch_new_emails(conn, since_time):
+    # 格式化最近两分钟的时间
     since_time_str = time.strftime('%d-%b-%Y', time.gmtime(since_time))
-    status, data = conn.search(None, f'(SINCE "{since_time_str}")')
+    # 通过 SINCE 参数检索指定时间之后的未读邮件
+    status, data = conn.search(None, f'(SINCE "{since_time_str}" UNSEEN)')
     if status != 'OK':
         return []
     return data[0].split()
@@ -101,12 +103,21 @@ def send_to_wechat(content):
         time.sleep(2)  # 重试间隔
     return False
 
+def mark_as_read(conn, mail_id):
+    try:
+        conn.store(mail_id, '+FLAGS', '\\Seen')  # 标记为已读
+        logging.info(f"邮件 {mail_id} 已标记为已读")
+    except Exception as e:
+        logging.error(f"标记邮件为已读时出错: {e}")
+
 def email_check_worker():
     while not stop_thread:
         try:
-            since_time = time.time() - 60  # 检查过去 1 分钟的邮件
+            since_time = time.time() - 120  # 检查过去 2 分钟的邮件
             conn = connect_imap()
             mail_ids = fetch_new_emails(conn, since_time)
+            if not mail_ids:
+                logging.info("没有新的未读邮件")
             for mail_id in mail_ids:
                 status, msg_data = conn.fetch(mail_id, '(RFC822)')
                 if status != 'OK':
@@ -115,7 +126,7 @@ def email_check_worker():
                 msg = email.message_from_bytes(raw_email)
                 content = parse_email(msg)
                 if send_to_wechat(content):
-                    conn.store(mail_id, '+FLAGS', '\\Seen')  # 标记为已读
+                    mark_as_read(conn, mail_id)  # 发送成功后标记为已读
             conn.close()
             conn.logout()
         except Exception as e:
