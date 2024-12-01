@@ -21,7 +21,7 @@ WORKDIR /app
 COPY --from=builder /app/venv venv
 
 # 复制应用代码
-COPY app.py ./
+COPY main.py ./
 
 # 设置环境变量
 ENV VIRTUAL_ENV=/app/venv
