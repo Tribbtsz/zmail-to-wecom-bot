@@ -9,8 +9,8 @@ ENV VIRTUAL_ENV=/app/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # 复制 requirements.txt 并安装依赖
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Stage 2: Runner
 FROM python:3-alpine AS runner
@@ -21,14 +21,14 @@ WORKDIR /app
 COPY --from=builder /app/venv venv
 
 # 复制应用代码
-COPY main.py .
+COPY app.py ./
 
 # 设置环境变量
 ENV VIRTUAL_ENV=/app/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-# 暴露端口（如果需要）
+# 暴露端口
 EXPOSE 8080
 
-# 运行应用
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "main:main"]
+# 运行应用（使用 Flask 内建的服务器）
+CMD ["python", "main.py"]
