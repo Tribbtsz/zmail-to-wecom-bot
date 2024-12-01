@@ -31,4 +31,4 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 EXPOSE 8080
 
 # 运行应用
-CMD ["python", "main.py"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "main:main"]
