@@ -76,10 +76,10 @@ def parse_email(msg):
     else:
         body = msg.get_payload(decode=True).decode(msg.get_content_charset() or 'utf-8')
 
-    # 限制正文为 500 字符
-    max_body_length = 500
+    # 限制正文为 1000 字符
+    max_body_length = 1000
     if len(body) > max_body_length:
-        body = body[:max_body_length] + "\n[内容过长，已截断]"
+        body = body[:max_body_length] + "\n..."
     content['body'] = body
     return content
 
@@ -87,7 +87,7 @@ def send_to_wechat(content):
     message = {
         "msgtype": "text",
         "text": {
-            "content": f"来自：{content['from']}\n主题：{content['subject']}\n时间：{content['date']}\n内容：{content['body']}"
+            "content": f"【Zmail】来自:{content['from']}\n主题:{content['subject']}\n内容:{content['body']}\n时间:{content['date']}"
         }
     }
     for attempt in range(3):  # 最多重试 3 次
