@@ -1,5 +1,5 @@
 # Stage 1: Builder
-FROM python:3-alpine AS builder
+FROM python:3.12.3-slim AS builder
 
 WORKDIR /app
 
@@ -13,7 +13,7 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Stage 2: Runner
-FROM python:3-alpine AS runner
+FROM python:3.12.3-slim AS runner
 
 WORKDIR /app
 
