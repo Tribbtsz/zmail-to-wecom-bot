@@ -99,7 +99,7 @@ def clear_expired_cache():
     current_time = time.time()
     expired_keys = [
         key
-        for key, (timestamp) in cache.items()
+        for key, (_, timestamp) in cache.items()
         if current_time - timestamp > CACHE_EXPIRATION
     ]
     for key in expired_keys:
@@ -122,7 +122,7 @@ def parse_email(msg):
 
     date_header = msg.get("Date")
     content["date"] = email.utils.parsedate_to_datetime(date_header).strftime(
-        "%Y-%m-%d %H:%M:%S.%f"
+        "%Y-%m-%d %H:%M:%S"
     )
 
     body = ""
