@@ -62,7 +62,7 @@ def summarize_text_with_retry(content, retries=2):
                 messages=[
                     {
                         "role": "system",
-                        "content": "你是一个邮件总结助手。请用中文总结以下内容（链接用：详细链接请进入邮箱查看 表示），要求：简洁突出主要信息，限制在150字以内。最终格式：主题：openai新产品sora上线\n内容：xxx\n。",
+                        "content": "你是一个邮件总结助手。请用中文总结以下内容（链接用：详细链接请进入邮箱查看 表示），要求：简洁突出主要信息，限制在150字以内。最终格式：主题：xxx\n内容：xxx\n。",
                     },
                     {"role": "user", "content": content},
                 ],
