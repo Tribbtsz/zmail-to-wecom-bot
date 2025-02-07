@@ -201,14 +201,17 @@ def process_email_batch(conn, mail_ids):
                 if summary:
                     cache[cache_key] = (summary, time.time())
 
-            if summary:
-                summaries.append(
-                    f"来自：{email_content['from']}\n{summary}\n日期：{email_content['date']}\n---"
-                )
-                # 将邮件标记为已读
-                conn.store(mail_id, "+FLAGS", "(\Seen)")
-            else:
+            # 如果AI总结失败，使用前500个字符
+            if not summary:
+                summary = f"[AI总结失败] 邮件预览：{email_content['body'][:500]}..."
                 failures += 1
+
+            summaries.append(
+                f"来自：{email_content['from']}\n{summary}\n日期：{email_content['date']}\n---"
+            )
+            # 将邮件标记为已读
+            conn.store(mail_id, "+FLAGS", "(\Seen)")
+
         except Exception as e:
             logging.error(f"处理邮件失败: {e}")
             failures += 1
